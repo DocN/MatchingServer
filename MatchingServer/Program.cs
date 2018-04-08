@@ -28,7 +28,7 @@ namespace MatchingServer
             user1.MaxRange = 10000;
             user1.Lat = 100;
             user1.Lon = 100;
-            user1.UserID = "aksdlakdasldkasldaasfasdsads";
+            user1.UserID = "aksdlakdasldkaslase3ddaasfasdsads";
 
             User user2 = new User();
             user2.AddPreference("icecream");
@@ -36,18 +36,123 @@ namespace MatchingServer
             user2.AddPreference("bitch");
             user2.AddPreference("fucker");
             user2.AddPreference("porn");
-            user2.MaxRange = 10000;
-            user2.Lat = 100;
+            user2.MaxRange = 10001;
+            user2.Lat = 110;
             user2.Lon = 100;
-            user2.UserID = "aksdlakdasldkasldas";
+            user2.UserID = "user2aksdlakdasldk32qdsadasldas";
+
+            User user3 = new User();
+            user3.AddPreference("icecream");
+            user3.AddPreference("noticream");
+            user3.AddPreference("bitch");
+            user3.AddPreference("fucker");
+            user3.AddPreference("porn");
+            user3.MaxRange = 10001;
+            user3.Lat = 110;
+            user3.Lon = 100;
+            user3.UserID = "user3aksdlakdasldkaslds3qwe23adasda123sas";
+
+            User user4 = new User();
+            user4.AddPreference("rofl");
+            user4.AddPreference("doubt");
+            user4.AddPreference("function");
+            user4.AddPreference("salut");
+            user4.AddPreference("beegees");
+            user4.MaxRange = 10001;
+            user4.Lat = 110;
+            user4.Lon = 100;
+            user4.UserID = "user4aksdlakdasldkasl312321dasddsadasda123sas";
+
+            User user5= new User();
+            user5.AddPreference("rofl");
+            user5.AddPreference("doubt");
+            user5.AddPreference("function");
+            user5.AddPreference("salut");
+            user5.AddPreference("beegees");
+            user5.MaxRange = 10001;
+            user5.Lat = 110;
+            user5.Lon = 100;
+            user5.UserID = "user5aksdlakdasldk23qfsadasldsadasda123sas";
+            User user6 = new User();
+            user6.AddPreference("rofl");
+            user6.AddPreference("doubt");
+            user6.AddPreference("function");
+            user6.AddPreference("salut");
+            user6.AddPreference("porn");
+            user6.MaxRange = 10001;
+            user6.Lat = 110;
+            user6.Lon = 100;
+            user6.UserID = "user6aksdlakdasldka3213sdfasdsldsadasda123sas";
+            User user7 = new User();
+            user7.AddPreference("icecream");
+            user7.AddPreference("noticream");
+            user7.AddPreference("bitch");
+            user7.AddPreference("fucker");
+            user7.AddPreference("porn");
+            user7.MaxRange = 10001;
+            user7.Lat = 110;
+            user7.Lon = 100;
+            user7.UserID = "user7aksdlakdasldkaslsadasdadsadasda123sas";
+
+            User user8 = new User();
+            user8.AddPreference("icecreamasd");
+            user8.AddPreference("noticream");
+            user8.AddPreference("bitch");
+            user8.AddPreference("fucker");
+            user8.AddPreference("porn");
+            user8.MaxRange = 10001;
+            user8.Lat = 110;
+            user8.Lon = 100;
+            user8.UserID = "user8aksdlakdasldkaslsadasdadsadasda123sas";
+
+            User user9 = new User();
+            user9.AddPreference("son");
+            user9.AddPreference("off");
+            user9.AddPreference("alex");
+            user9.AddPreference("dulla");
+            user9.AddPreference("steven");
+            user9.MaxRange = 10001;
+            user9.Lat = 110;
+            user9.Lon = 100;
+            user9.UserID = "user8aksdlakdasldkaslsadasdadsadasda123sas";
+
+
+            User user10 = new User();
+            user10.AddPreference("not");
+            user10.AddPreference("you");
+            user10.AddPreference("alex");
+            user10.AddPreference("dulla");
+            user10.AddPreference("steven");
+            user10.MaxRange = 10001;
+            user10.Lat = 110;
+            user10.Lon = 100;
+            user10.UserID = "user8aksdlakdasldkaslsadasdadsadasda123sas";
 
             myQueue.AddUserToQueue(user1);
             myQueue.AddUserToQueue(user2);
 
             matcher.MatchQueue(myQueue);
 
-            //new Program().Run().Wait();
+            myQueue.AddUserToQueue(user3);
+            matcher.MatchQueue(myQueue);
 
+            myQueue.AddUserToQueue(user4);
+            matcher.MatchQueue(myQueue);
+            myQueue.AddUserToQueue(user5);
+            matcher.MatchQueue(myQueue);
+            myQueue.AddUserToQueue(user6);
+            matcher.MatchQueue(myQueue);
+            myQueue.AddUserToQueue(user7);
+            matcher.MatchQueue(myQueue);
+            myQueue.AddUserToQueue(user8);
+            matcher.MatchQueue(myQueue);
+            myQueue.AddUserToQueue(user9);
+            myQueue.AddUserToQueue(user10);
+            matcher.MatchQueue(myQueue);
+            matcher.MatchQueue(myQueue);
+
+            new Program().Run().Wait();
+            matcher.printPotentialGroups();
             //myQueue.PrintQueue();
             Console.ReadLine();
         }
