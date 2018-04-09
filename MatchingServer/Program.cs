@@ -25,20 +25,7 @@ namespace MatchingServer
 
         public async Task Run()
         {
-
-
-            /*/test case 
-            User user1 = new User();
-            user1.AddPreference("icecream");
-            user1.AddPreference("noticream");
-            user1.AddPreference("bitch");
-            user1.AddPreference("fucker");
-            user1.AddPreference("porn");
-            user1.MaxRange = 10000;
-            user1.Lat = 100;
-            user1.Lon = 100;
-            user1.UserID = "XTyFsywYM7csODRYKNFZPh4Wahf2";
-
+            /*
             User user2 = new User();
             user2.AddPreference("icecream");
             user2.AddPreference("noticream");
@@ -137,7 +124,6 @@ namespace MatchingServer
             user10.Lon = 100;
             user10.UserID = "user8aksdlakdasldkaslsadasdadsadasda123sas";
 
-            myQueue.AddUserToQueue(user1);
             myQueue.AddUserToQueue(user2);
 
             matcher.MatchQueue(myQueue);
@@ -159,57 +145,62 @@ namespace MatchingServer
             myQueue.AddUserToQueue(user10);
             matcher.MatchQueue(myQueue);
             matcher.MatchQueue(myQueue);
-            */
-
+            
             User user1 = new User();
             user1.AddPreference("Movies");
-            user1.AddPreference("Reading");
             user1.AddPreference("Food");
-            user1.AddPreference("fucker");
-            user1.AddPreference("porn");
-            user1.MaxRange = 10000;
-            user1.Lat = 100;
-            user1.Lon = 100;
-            user1.UserID = "XTyFsywYM7csODRYKNFZPh4Wahf2";
+            user1.AddPreference("Sports");
+            user1.AddPreference("lov,e");
+            user1.AddPreference("clothes");
+            user1.MaxRange = 100;
+            user1.Lat = 37.421998333333335;
+            user1.Lon = -124.08400000000002;
+            user1.UserID = "230qasfksalfaskdlsadkasld";
             myQueue.AddUserToQueue(user1);
-
-            IFirebaseConfig config = new FirebaseConfig
-            {
-                AuthSecret = "kxpHhB3nvJ3qsBFnNDWphHO7wlXCmwfzyKD3Weh8",
-                BasePath = "https://chatrdk-458bf.firebaseio.com/"
-            };
-            IFirebaseClient client = new FirebaseClient(config);
-            FirebaseResponse response = await client.GetAsync("chatReq");
-            var myJson = response.Body;
-            JObject jObject = JObject.Parse(myJson);
-            foreach(var item in jObject) {
-                JToken currentUser = jObject[item.Key];
-#pragma warning disable IDE0017 // Simplify object initialization
-                User newUser = new User();
-#pragma warning restore IDE0017 // Simplify object initialization
-
-                newUser.UserID = item.Key;
-                newUser.Lat = Convert.ToDouble(currentUser["Lat"]);
-                newUser.Lon = Convert.ToDouble(currentUser["Lon"]);
-                newUser.MaxRange = Convert.ToDouble(currentUser["MaxRange"]);
-                foreach (var prefer in currentUser["Preferences"])
-                {
-                    newUser.AddPreference(prefer.ToString());
-                }
-                myQueue.AddUserToQueue(newUser);
-                FirebaseResponse deleteResponse = await client.DeleteAsync("chatQueue/" + newUser.UserID); //Deletes
-                Console.WriteLine(deleteResponse.StatusCode);
-
-                //PushResponse tester = await client.PushAsync("chatQueue", newUser);
-                //Console.WriteLine(matcher.GetDistanceFromLatLonInKm(newUser, (User)myQueue.UserList[0]));
-
-                matcher.MatchQueue(myQueue);
-                matcher.printPotentialGroups();
-            }
+            */
             //test loop to push to firebase
-
             while (true)
             {
+                IFirebaseConfig config = new FirebaseConfig
+                {
+                    AuthSecret = "kxpHhB3nvJ3qsBFnNDWphHO7wlXCmwfzyKD3Weh8",
+                    BasePath = "https://chatrdk-458bf.firebaseio.com/"
+                };
+                IFirebaseClient client = new FirebaseClient(config);
+                FirebaseResponse response = await client.GetAsync("chatQueue");
+                try { 
+                    var myJson = response.Body;
+                    JObject jObject = JObject.Parse(myJson);
+                    foreach (var item in jObject)
+                    {
+                        JToken currentUser = jObject[item.Key];
+    #pragma warning disable IDE0017 // Simplify object initialization
+                        User newUser = new User();
+    #pragma warning restore IDE0017 // Simplify object initialization
+
+                        newUser.UserID = item.Key;
+                        newUser.Lat = Convert.ToDouble(currentUser["Lat"]);
+                        newUser.Lon = Convert.ToDouble(currentUser["Lon"]);
+                        newUser.MaxRange = Convert.ToDouble(currentUser["MaxRange"]);
+                        foreach (var prefer in currentUser["Preferences"])
+                        {
+                            newUser.AddPreference(prefer.ToString());
+                        }
+                        myQueue.AddUserToQueue(newUser);
+                        FirebaseResponse deleteResponse = await client.DeleteAsync("chatQueue/" + newUser.UserID); //Deletes
+                        Console.WriteLine(deleteResponse.StatusCode);
+
+                        //PushResponse tester = await client.PushAsync("chatQueue", newUser);
+                        //Console.WriteLine(matcher.GetDistanceFromLatLonInKm(newUser, (User)myQueue.UserList[0]));
+
+                        matcher.MatchQueue(myQueue);
+                        matcher.printPotentialGroups();
+                    }
+                } catch (Exception e)
+                {
+                    Console.WriteLine(" no javascript object nintendo");
+                }
+
                 List<Group> readyGroups = matcher.PrepareReadyGroups();
                 for (int i = 0; i < readyGroups.Count; i++)
                 {

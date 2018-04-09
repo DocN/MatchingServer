@@ -131,11 +131,13 @@ namespace MatchingServer
             }
             if (createdGroup)
             {
+                Console.WriteLine("here22");
                 potentialGroups.Add(tempGroup);
                 removeGroupedUsers(tempGroup, masterQueueList);
             }
             else
             {
+                Console.WriteLine("here");
                 masterQueueList.UserList.Add(grouplead);
             }
             return createdGroup;
