@@ -9,7 +9,7 @@ namespace MatchingServer
 {
     class Match
     {
-        private const int MAX_PREF_MATCH = 5;
+        private const int MAX_PREF_MATCH = 1;
         private const int MIN_PREF_MATCH = 1;
 
         private const int STARTGROUPLEAD = 0;
@@ -59,19 +59,24 @@ namespace MatchingServer
                     {
                         continue;
                     }
-                    
+                    User grouplead  = currentGroup.GetGroupLead();
                     User currentUser = (User)usersInQueue[j];
-                    ArrayList matches = GetMatchesAgainstGroup(currentGroup, currentUser);
-                    Console.WriteLine(matches.Count);
-                    int matchesRequired = currentGroup.groupFormPatience();
-                    Console.WriteLine("matches Required " + matchesRequired);
-                    //found someone to join group
-                    if(matches.Count >= matchesRequired)
-                    {
-                        Console.WriteLine("matched user to existing group" + currentUser.ToString());
-                        currentGroup.AddUser(currentUser);
-                        matchedUsers.Add(currentUser);
-                        matched = true;
+                    double firstUserLimitRange = grouplead.MaxRange;
+                    double secondUserLimitRange = currentUser.MaxRange;
+                    double distanceAway = this.GetDistanceFromLatLonInKm(grouplead, currentUser);
+
+                    if (distanceAway <= firstUserLimitRange && distanceAway <= secondUserLimitRange) { 
+                        ArrayList matches = GetMatchesAgainstGroup(currentGroup, currentUser);
+                        int matchesRequired = currentGroup.groupFormPatience();
+                        Console.WriteLine("matches Required " + matchesRequired);
+                        //found someone to join group
+                        if(matches.Count >= matchesRequired)
+                        {
+                            Console.WriteLine("matched user to existing group" + currentUser.ToString());
+                            currentGroup.AddUser(currentUser);
+                            matchedUsers.Add(currentUser);
+                            matched = true;
+                        }
                     }
                 }
                 //remove users that have been matched
@@ -99,7 +104,6 @@ namespace MatchingServer
             Group tempGroup = new Group();
             User grouplead = (User)masterQueueList.UserList[STARTGROUPLEAD];
             tempGroup.AddUser(grouplead);
-            Console.WriteLine("wtf " + masterQueueList.UserList.Count);
             masterQueueList.UserList.RemoveAt(STARTGROUPLEAD);
             Boolean createdGroup = false;
             for (int i = 0; i < masterQueueList.UserList.Count; i++)
@@ -214,6 +218,33 @@ namespace MatchingServer
             {
                 Group currentGroup = (Group)potentialGroups[i];
                 Console.WriteLine(currentGroup);
+            }
+        }
+
+        public List<Group> PrepareReadyGroups()
+        {
+            List<Group> readyGroups = new List<Group>();
+            for(int i =0; i < potentialGroups.Count; i++)
+            {
+                Group currentGroup = potentialGroups[i];
+                bool currentGroupStatus = currentGroup.CheckTimeLimit();
+                //ready to be sent off 
+                if(currentGroupStatus)
+                {
+                    readyGroups.Add(currentGroup);
+                }
+            }
+            RemoveReadyGroups(readyGroups);
+            return readyGroups;
+        }
+
+        private void RemoveReadyGroups(List <Group> readyGroups)
+        {
+            for(int i =0; i < readyGroups.Count; i++)
+            {
+                //find the element and remove it from the group of rooms waiting to be sent to ready list.
+                int readyGroupIndex = potentialGroups.IndexOf(readyGroups[i]);
+                potentialGroups.RemoveAt(readyGroupIndex);
             }
         }
     }

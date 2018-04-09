@@ -17,8 +17,17 @@ namespace MatchingServer
         public static Match matcher = new Match();
         static void Main(string[] args)
         {
+            new Program().Run().Wait();
+            matcher.printPotentialGroups();
+            //myQueue.PrintQueue();
+            //Console.ReadLine();
+        }
 
-            //test case
+        public async Task Run()
+        {
+
+
+            /*/test case 
             User user1 = new User();
             user1.AddPreference("icecream");
             user1.AddPreference("noticream");
@@ -28,7 +37,7 @@ namespace MatchingServer
             user1.MaxRange = 10000;
             user1.Lat = 100;
             user1.Lon = 100;
-            user1.UserID = "aksdlakdasldkaslase3ddaasfasdsads";
+            user1.UserID = "XTyFsywYM7csODRYKNFZPh4Wahf2";
 
             User user2 = new User();
             user2.AddPreference("icecream");
@@ -63,7 +72,7 @@ namespace MatchingServer
             user4.Lon = 100;
             user4.UserID = "user4aksdlakdasldkasl312321dasddsadasda123sas";
 
-            User user5= new User();
+            User user5 = new User();
             user5.AddPreference("rofl");
             user5.AddPreference("doubt");
             user5.AddPreference("function");
@@ -114,7 +123,7 @@ namespace MatchingServer
             user9.MaxRange = 10001;
             user9.Lat = 110;
             user9.Lon = 100;
-            user9.UserID = "user8aksdlakdasldkaslsadasdadsadasda123sas";
+            user9.UserID = "XTyFsywYM7csODRYKNFZPh4Wahf2";
 
 
             User user10 = new User();
@@ -150,15 +159,20 @@ namespace MatchingServer
             myQueue.AddUserToQueue(user10);
             matcher.MatchQueue(myQueue);
             matcher.MatchQueue(myQueue);
+            */
 
-            new Program().Run().Wait();
-            matcher.printPotentialGroups();
-            //myQueue.PrintQueue();
-            Console.ReadLine();
-        }
+            User user1 = new User();
+            user1.AddPreference("Movies");
+            user1.AddPreference("Reading");
+            user1.AddPreference("Food");
+            user1.AddPreference("fucker");
+            user1.AddPreference("porn");
+            user1.MaxRange = 10000;
+            user1.Lat = 100;
+            user1.Lon = 100;
+            user1.UserID = "XTyFsywYM7csODRYKNFZPh4Wahf2";
+            myQueue.AddUserToQueue(user1);
 
-        public async Task Run()
-        {
             IFirebaseConfig config = new FirebaseConfig
             {
                 AuthSecret = "kxpHhB3nvJ3qsBFnNDWphHO7wlXCmwfzyKD3Weh8",
@@ -175,22 +189,50 @@ namespace MatchingServer
 #pragma warning restore IDE0017 // Simplify object initialization
 
                 newUser.UserID = item.Key;
-                newUser.Lat = Convert.ToDouble(currentUser["lat"]);
-                newUser.Lon = Convert.ToDouble(currentUser["lon"]);
-                newUser.MaxRange = Convert.ToDouble(currentUser["range"]);
-                foreach (var prefer in currentUser["preferences"])
+                newUser.Lat = Convert.ToDouble(currentUser["Lat"]);
+                newUser.Lon = Convert.ToDouble(currentUser["Lon"]);
+                newUser.MaxRange = Convert.ToDouble(currentUser["MaxRange"]);
+                foreach (var prefer in currentUser["Preferences"])
                 {
                     newUser.AddPreference(prefer.ToString());
                 }
                 myQueue.AddUserToQueue(newUser);
-                FirebaseResponse deleteResponse = await client.DeleteAsync("chatReq/" + "8eNnCRIYKTNnA6c8DWoU8Vm9jMA2"); //Deletes todos collection
+                FirebaseResponse deleteResponse = await client.DeleteAsync("chatQueue/" + newUser.UserID); //Deletes
                 Console.WriteLine(deleteResponse.StatusCode);
 
-                PushResponse tester = await client.PushAsync("chatQueue", newUser);
-                Console.WriteLine(matcher.GetDistanceFromLatLonInKm(newUser, (User)myQueue.UserList[0]));
-            }
+                //PushResponse tester = await client.PushAsync("chatQueue", newUser);
+                //Console.WriteLine(matcher.GetDistanceFromLatLonInKm(newUser, (User)myQueue.UserList[0]));
 
-            
+                matcher.MatchQueue(myQueue);
+                matcher.printPotentialGroups();
+            }
+            //test loop to push to firebase
+
+            while (true)
+            {
+                List<Group> readyGroups = matcher.PrepareReadyGroups();
+                for (int i = 0; i < readyGroups.Count; i++)
+                {
+                    Console.WriteLine("ready group");
+                    Console.WriteLine(readyGroups[i]);
+                }
+                for(int i =0; i < readyGroups.Count; i++)
+                {
+                    Group currentGroup = readyGroups[i];
+                    FirebaseGroup currentFireGroup = currentGroup.FirebaseGroupGenerate();
+                    //PushResponse tester = await client.PushAsync("group", currentFireGroup);
+                    SetResponse tester = await client.SetAsync($"group/{currentFireGroup.getGroupname()}", currentFireGroup);
+
+                    //travel through each user profile and add the group to their list.
+                    for(int j =0; j < currentGroup.Users.Count; j++)
+                    {
+                        User currentUser = (User)currentGroup.Users[j];
+                        String currentuserID = currentUser.UserID;
+                        SetResponse userTravelerFirebase = await client.SetAsync($"user/{currentuserID}/group/{currentFireGroup.getGroupname()}", currentFireGroup.getGroupname());
+                    }
+                }
+                System.Threading.Thread.Sleep(1000);
+            }
         }
 
 

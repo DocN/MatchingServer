@@ -144,6 +144,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FirebaseGroup.cs" />
+    <Compile Include="FirebaseGroupInfo.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Group.cs" />
     <Compile Include="Match.cs" />
     <Compile Include="Program.cs" />

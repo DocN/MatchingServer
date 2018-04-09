@@ -18,9 +18,11 @@ namespace MatchingServer
         private const int GROUPMAXPATIENCE = 2;
         private const int MINGROUPMATCH = 1;
         private const int SECONDS_PER_PATIENCE = 10;
+        private const int MAX_WAIT_TIME_CLOSE_GROUP = 15;
         private const int MAX_MEMBERS = 5;
-
+        private static Random random = new Random();
         private int groupFormPatienceCount;
+        
        
         public Group()
         {
@@ -71,15 +73,28 @@ namespace MatchingServer
 
         private String randomID()
         {
-            string a = DateTime.Now.Month.ToString() +
+            string a = GetLetter() + DateTime.Now.Month.ToString() +
             DateTime.Now.Day.ToString() +
             DateTime.Now.Year.ToString() +
             DateTime.Now.Hour.ToString() +
             DateTime.Now.Minute.ToString() +
             DateTime.Now.Second.ToString() +
-            DateTime.Now.Millisecond.ToString();
+            DateTime.Now.Millisecond.ToString() + GetLetter();
             return a;
         }
+
+         
+        public static char GetLetter()
+        {
+            
+            // This method returns a random lowercase letter
+            // ... Between 'a' and 'z' inclusize.
+            int num = random.Next(0, 26); // Zero to 25
+            char let = (char)('a' + num);
+            return let;
+        }
+
+
 
         public override string ToString()
         {
@@ -94,6 +109,47 @@ namespace MatchingServer
                 output = output + (String)matchedPreferences[i] + "\n";
             }
             return output;
+        }
+        public User GetGroupLead()
+        {
+            User theUser = null;
+            if (Users.Count > 0)
+            {
+                theUser = (User)Users[LEADER_INDEX];
+            }
+            return theUser;
+        }
+        
+        public bool CheckTimeLimit()
+        {
+            long currentTime = this.UnixTimeNow();
+            long timePassedInSeconds = currentTime - groupCreationTime;
+            //check if time elapsed for closing group
+            if(timePassedInSeconds >= MAX_WAIT_TIME_CLOSE_GROUP)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /*used for converting to a firebase acceptable data format */
+        public FirebaseGroup FirebaseGroupGenerate()
+        {
+            FirebaseGroup fireGroup = new FirebaseGroup();
+            //copy all users into member
+            for(int i =0; i < users.Count; i++)
+            {
+                fireGroup.addMember((User)users[i]);
+            }
+
+            //copy preferences
+            for(int i =0; i < MatchedPreferences.Count; i++)
+            {
+                fireGroup.addPreference((String)MatchedPreferences[i]);
+            }
+
+            fireGroup.setGroupName(groupName);
+            return fireGroup;
         }
     }
 }
